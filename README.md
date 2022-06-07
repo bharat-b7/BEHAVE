@@ -18,7 +18,7 @@ Repo for BEHAVE: Dataset and Method for Tracking Human Object Interactions, CVPR
     month = {June},
     year = {2022},
 }
-'''
+```
 
 ## LICENCE
 Copyright (c) 2020 Bharat Lal Bhatnagar, Max-Planck-Gesellschaft

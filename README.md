@@ -1,7 +1,7 @@
 # BEHAVE
 Repo for BEHAVE: Dataset and Method for Tracking Human Object Interactions, CVPR'22
 
-## LiICENCE
+## LICENCE
 Copyright (c) 2020 Bharat Lal Bhatnagar, Max-Planck-Gesellschaft
 
 Please read carefully the following terms and conditions and any accompanying documentation before you download and/or use this software and associated documentation files (the "Software").
@@ -14,5 +14,5 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 You understand and agree that the authors are under no obligation to provide either maintenance services, update services, notices of latent defects, or corrections of defects with regard to the Software. The authors nevertheless reserve the right to update, modify, or discontinue the Software at any time.
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. You agree to cite the LoopReg: Self-supervised Learning of Implicit Surface Correspondences, Pose and Shape for 3D Human Mesh Registration paper in documents and papers that report on research using this Software.
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. You agree to cite the "BEHAVE: Dataset and Method for Tracking Human Object Interactions" paper in documents and papers that report on research using this Software.
 

@@ -1,6 +1,4 @@
-## This function is copied from https://github.com/Rubikplayer/flame-fitting
-
-'''
+"""
 Copyright 2015 Matthew Loper, Naureen Mahmood and the Max Planck Gesellschaft.  All rights reserved.
 This software is provided for research purposes only.
 By using this software you agree to the terms of the SMPL Model license here http://smpl.is.tue.mpg.de/license
@@ -15,13 +13,18 @@ Modules included:
 - load_model:
   loads the SMPL model from a given file location (i.e. a .pkl file location),
   or a dictionary object.
-'''
+
+This file is copied from https://github.com/Rubikplayer/flame-fitting
+"""
 import pickle
-import numpy as np
+
 import chumpy as ch
+import numpy as np
 from chumpy.ch import MatVecMult
-from lib.verts import verts_core
-from lib.posemapper import posemap
+
+from lib.smpl.smplpytorch.smplpytorch.native.webuser.posemapper import posemap
+from lib.smpl.smplpytorch.smplpytorch.native.webuser.verts import verts_core
+
 
 def backwards_compatibility_replacements(dd):
     # replacements
@@ -80,6 +83,7 @@ def ready_arguments(fname_or_dict):
         dd['v_posed'] = dd['v_template'] + dd['posedirs'].dot(posemap(dd['bs_type'])(dd['pose']))
 
     return dd
+
 
 def load_model(fname_or_dict):
     dd = ready_arguments(fname_or_dict)

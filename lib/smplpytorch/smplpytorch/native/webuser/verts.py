@@ -1,6 +1,4 @@
-## This function is copied from https://github.com/Rubikplayer/flame-fitting
-
-'''
+"""
 Copyright 2015 Matthew Loper, Naureen Mahmood and the Max Planck Gesellschaft.  All rights reserved.
 This software is provided for research purposes only.
 By using this software you agree to the terms of the SMPL Model license here http://smpl.is.tue.mpg.de/license
@@ -16,14 +14,15 @@ Modules included:
   SMPL model.
 - verts_core: [overloaded function inherited by lbs.verts_core]
   computes the blending of joint-influences for each vertex based on type of skinning
-'''
 
+This file is copied from https://github.com/Rubikplayer/flame-fitting
+"""
 import chumpy
-import lib.lbs
-from lib.posemapper import posemap
 import scipy.sparse as sp
 from chumpy.ch import MatVecMult
-import lib.lbs as lbs
+
+import lib.smpl.smplpytorch.smplpytorch.native.webuser.lbs as lbs
+from lib.smpl.smplpytorch.smplpytorch.native.webuser.posemapper import posemap
 
 
 def ischumpy(x): return hasattr(x, 'dterms')

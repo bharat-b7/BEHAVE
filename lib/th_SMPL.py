@@ -11,7 +11,7 @@ import torch.nn as nn
 from lib.smpl_layer import SMPL_Layer
 from lib.body_objectives import torch_pose_obj_data
 from lib.torch_functions import batch_sparse_dense_matmul
-
+from PATHS import SMPL_MODEL_ROOT
 
 class th_batch_SMPL_split_params(nn.Module):
     """
@@ -65,7 +65,7 @@ class th_batch_SMPL_split_params(nn.Module):
         self.gender = gender
         # pytorch smpl
         self.smpl = SMPL_Layer(center_idx=0, gender=gender, num_betas=num_betas,
-                               model_root='/BS/bharat/work/installation/smplpytorch/smplpytorch/native/models')
+                               model_root=SMPL_MODEL_ROOT)
 
         # Landmarks
         self.body25_reg_torch, self.face_reg_torch, self.hand_reg_torch = torch_pose_obj_data(batch_size=batch_sz)
@@ -122,7 +122,7 @@ class th_batch_SMPL(nn.Module):
         self.gender = gender
         # pytorch smpl
         self.smpl = SMPL_Layer(center_idx=0, gender=gender,
-                               model_root='/BS/bharat/work/installation/smplpytorch/smplpytorch/native/models')
+                               model_root=SMPL_MODEL_ROOT)
 
         # Landmarks
         self.body25_reg_torch, self.face_reg_torch, self.hand_reg_torch = torch_pose_obj_data(batch_size=batch_sz)
@@ -171,7 +171,7 @@ class th_SMPL(nn.Module):
 
         ## pytorch smpl
         self.smpl = SMPL_Layer(center_idx=0, gender=gender,
-                          model_root='/BS/bharat/work/installation/smplpytorch/smplpytorch/native/models')
+                          model_root=SMPL_MODEL_ROOT)
 
     def forward(self):
         verts, Jtr, tposed, naked = self.smpl(self.pose.unsqueeze(axis=0),

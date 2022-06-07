@@ -1,6 +1,4 @@
-## This function is copied from https://github.com/Rubikplayer/flame-fitting
-
-'''
+"""
 Copyright 2015 Matthew Loper, Naureen Mahmood and the Max Planck Gesellschaft.  All rights reserved.
 This software is provided for research purposes only.
 By using this software you agree to the terms of the SMPL Model license here http://smpl.is.tue.mpg.de/license
@@ -15,9 +13,9 @@ Modules included:
   computes global rotation & translation of the model
 - verts_core: [overloaded function inherited from verts.verts_core]
   computes the blending of joint-influences for each vertex based on type of skinning
-'''
 
-from lib.posemapper import posemap
+This file is copied from https://github.com/Rubikplayer/flame-fitting
+"""
 import chumpy
 import numpy as np
 
@@ -29,7 +27,7 @@ def global_rigid_transformation(pose, J, kintree_table, xp):
     parent = {i: id_to_col[kintree_table[0, i]] for i in range(1, kintree_table.shape[1])}
 
     if xp == chumpy:
-        from lib.posemapper import Rodrigues
+        from lib.smpl.smplpytorch.smplpytorch.native.webuser.posemapper import Rodrigues
         rodrigues = lambda x: Rodrigues(x)
     else:
         import cv2

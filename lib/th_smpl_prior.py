@@ -7,23 +7,16 @@ else:
 import numpy as np
 import torch
 import ipdb
+import os
+import sys
+sys.path.append(os.getcwd())
+import pickle as pkl
+from PATHS import SMPL_MODEL_ROOT, SMPL_ASSETS_ROOT
 
 
-def get_prior(gender='male', precomputed=False):
-    if precomputed:
-        prior = Prior(sm=None)
-        return prior['Generic']
-    else:
-        from lib.smpl_paths import SmplPaths
-
-        dp = SmplPaths(gender=gender)
-        if gender == 'neutral':
-            dp_prior = SmplPaths(gender='male')
-        else:
-            dp_prior = dp
-
-        prior = Prior(dp_prior.get_smpl())
-        return prior['Generic']
+def get_prior(gender='male'):
+    prior = Prior(gender)
+    return prior['Generic']
 
 
 class th_Mahalanobis(object):
@@ -44,21 +37,12 @@ class th_Mahalanobis(object):
         
 
 class Prior(object):
-    def __init__(self, sm, prefix=3):
+    def __init__(self, gender, prefix=3):
         self.prefix = prefix
-        if sm is not None:
-            # Compute mean and variance based on the provided poses
-            self.pose_subjects = sm.pose_subjects
-            all_samples = [p[prefix:] for qsub in self.pose_subjects
-                           for name, p in zip(qsub['pose_fnames'], qsub['pose_parms'])]  # if 'CAESAR' in name or 'Tpose' in name or 'ReachUp' in name]
-            self.priors = {'Generic': self.create_prior_from_samples(all_samples)}
-        else:
-            import pickle as pkl
-            # Load pre-computed mean and variance
-            dat = pkl.load(open('assets/pose_prior.pkl', 'rb'))
-            self.priors = {'Generic': th_Mahalanobis(dat['mean'],
-                           dat['precision'],
-                           self.prefix)}
+        dat = pkl.load(open(os.path.join(SMPL_ASSETS_ROOT, f'prior_{gender}.pkl'), 'rb'))
+        self.priors = {'Generic': th_Mahalanobis(dat['mean'],
+                       dat['precision'],
+                       self.prefix)}
 
     def create_prior_from_samples(self, samples):
         from sklearn.covariance import GraphicalLassoCV
@@ -78,3 +62,26 @@ class Prior(object):
                                else self.create_prior_from_samples(samples)
 
         return self.priors[pid]
+
+def save_priors(prior:th_Mahalanobis, outfile):
+    """
+    save prior as a pkl file
+    """
+    import pickle as pkl
+    pkl.dump({
+        "mean":prior.mean.cpu().numpy(),
+        'precision':prior.prec.cpu().numpy()
+    }, open(outfile, 'wb'))
+    print('file saved to', outfile)
+
+
+if __name__ == '__main__':
+    "test loading prior"
+    prior = get_prior('male')
+    print(prior.mean)
+    print(prior.prec.shape)
+    # save_priors(prior, 'assets/prior_male.pkl')
+    prior = get_prior('female')
+    # save_priors(prior, 'assets/prior_female.pkl')
+    print(prior.mean)
+    print(prior.prec.shape)

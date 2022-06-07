@@ -7,20 +7,16 @@ Edited by: Bharat
 import os
 from os.path import join, split, exists
 import sys
+sys.path.append(os.getcwd())
 import numpy as np
 import ipdb
 import torch
 from torch.nn.functional import mse_loss
 
-from psbody.mesh import Mesh
 import pickle as pkl
-# from psbody.smpl import load_model
-# from psbody.smpl.serialization import backwards_compatibility_replacements
-from lib.smpl_paths import ROOT, ASSETS_ROOT
 from lib.torch_functions import batch_sparse_dense_matmul
 from pytorch3d.renderer import PerspectiveCameras
-# from lib.mesh_distance import point_to_surface_vec, batch_point_to_surface_vec_signed
-
+from PATHS import SMPL_ASSETS_ROOT
 HAND_VISIBLE = 0.2
 
 part2num = {
@@ -53,9 +49,9 @@ def torch_pose_obj_data(batch_size=1):
     """
     Keypoint operators on SMPL verts.
     """
-    body25_reg = pkl.load(open(join(ROOT, 'assets/body25_regressor.pkl'), 'rb'), encoding="latin1").T
-    face_reg = pkl.load(open(join(ROOT, 'assets/face_regressor.pkl'), 'rb'), encoding="latin1").T
-    hand_reg = pkl.load(open(join(ROOT, 'assets/hand_regressor.pkl'), 'rb'), encoding="latin1").T
+    body25_reg = pkl.load(open(join(SMPL_ASSETS_ROOT, 'body25_regressor.pkl'), 'rb'), encoding="latin1").T
+    face_reg = pkl.load(open(join(SMPL_ASSETS_ROOT, 'face_regressor.pkl'), 'rb'), encoding="latin1").T
+    hand_reg = pkl.load(open(join(SMPL_ASSETS_ROOT, 'hand_regressor.pkl'), 'rb'), encoding="latin1").T
     body25_reg_torch = torch.sparse_coo_tensor(body25_reg.nonzero(), body25_reg.data , body25_reg.shape)
     face_reg_torch = torch.sparse_coo_tensor(face_reg.nonzero(), face_reg.data , face_reg.shape)
     hand_reg_torch = torch.sparse_coo_tensor(hand_reg.nonzero(), hand_reg.data , hand_reg.shape)

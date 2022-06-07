@@ -14,27 +14,23 @@ import codecs
 import torch
 
 import sys
-from PATHS import CODE, BEHAVE_PATH, PROCESSED_PATH
-sys.path.append(CODE)
+sys.path.append('..')
+import yaml
+with open("PATHS.yml", 'r') as stream:
+    paths = yaml.safe_load(stream)
+sys.path.append(paths['CODE'])
+PROCESSED_PATH, BEHAVE_PATH = paths['PROCESSED_PATH'], paths['BEHAVE_PATH']
 
 from utils.preprocess_pointcloud import preprocess
 from utils.voxelize_ho import clean_pc
-
-def parse_object(name):
-    temp = name.split('_')[2]
-    if temp == 'chairwood' or temp == 'chairblack':
-        return 'chair'
-    elif temp == 'basketball' or temp == 'yogaball':
-        return 'sports ball'
-    else:
-        return temp
+from utils.compute_df_ho import parse_object
 
 
 class DataLoader(object):
     def __init__(self, mode, res=32, pointcloud_samples=3000, data_path=PROCESSED_PATH,
                  split_file='assets/data_split_01.pkl', suffix='',
                  batch_size=64, num_sample_points=1024, num_workers=12, sample_distribution=[1], sample_sigmas=[0.005],
-                 ext='', cache_suffix=None):
+                 ext=''):
         # sample distribution should contain the percentage of uniform samples at index [0]
         # and the percentage of N(0,sample_sigma[i-1]) samples at index [i] (>0).
         self.sample_distribution = np.array(sample_distribution)
@@ -57,7 +53,6 @@ class DataLoader(object):
         self.pointcloud_samples = pointcloud_samples
         self.ext = ext
         self.suffix = suffix
-        self.cache_suffix = cache_suffix
 
         # compute number of samples per sampling method
         self.num_samples = np.rint(self.sample_distribution * self.num_sample_points).astype(np.uint32)

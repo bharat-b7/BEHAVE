@@ -44,7 +44,7 @@ def voxelized_pointcloud(pc_h_, pc_o_, name, out_path, res, num_points, bounds=(
 
     out_file = join(out_path, name + '_voxelized_point_cloud_res_{}_points_{}_{}.npz'.format(res, num_points, ext))
     if exists(out_file) and REDO == False:
-        print('Already exists, ', split(out_file)[1])
+        print('Already exists, ', out_file)
         return
 
     pc_h = trimesh.load(pc_h_)
@@ -81,7 +81,7 @@ def voxelized_pointcloud(pc_h_, pc_o_, name, out_path, res, num_points, bounds=(
     np.savez(out_file, point_cloud=point_cloud, compressed_occupancies=compressed_occupancies,
              compressed_segmentation=np.packbits(segmentation),
              bb_min=bounds[0], bb_max=bounds[1], res=res)
-    print('Done, ', split(out_file)[1])
+    print('Done, ', out_file)
 
 
 REDO = False

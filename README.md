@@ -1,6 +1,25 @@
 # BEHAVE
 Repo for BEHAVE: Dataset and Method for Tracking Human Object Interactions, CVPR'22
 
+## Prerequisites
+
+## Download pre-trained models
+
+## Test BEHAVE model
+
+## Train BEHAVE model
+
+## Cite us:
+```
+@inproceedings{bhatnagar22behave,
+    title = {BEHAVE: Dataset and Method for Tracking Human Object Interactions},
+    author = {Bhatnagar, Bharat Lal and  Xie, Xianghui and Petrov, Ilya and Sminchisescu, Cristian and Theobalt, Christian and Pons-Moll, Gerard},
+    booktitle = {{IEEE} Conference on Computer Vision and Pattern Recognition (CVPR)},
+    month = {June},
+    year = {2022},
+}
+'''
+
 ## LICENCE
 Copyright (c) 2020 Bharat Lal Bhatnagar, Max-Planck-Gesellschaft
 

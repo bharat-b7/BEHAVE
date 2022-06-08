@@ -2,11 +2,11 @@
 Repo for BEHAVE: Dataset and Method for Tracking Human Object Interactions, CVPR'22
 
 ## Prerequisites
-I've added my environment installations in the provided requirements.txt file.
-
-Use the script utils/voxelize_ho.py to voxelize the human and object point cloud from BEHAVE dataset. This is the input to the network.
-
-Use the scipt utils/compute_df_ho.py to sample query points and compute distance and correspondence fields. This is the supervision to the network.
+- I've added my environment installations in the provided requirements.txt file.
+- Use the script utils/voxelize_ho.py to voxelize the human and object point cloud from BEHAVE dataset. This is the input to the network.
+- Use the scipt utils/compute_df_ho.py to sample query points and compute distance and correspondence fields. This is the supervision to the network.
+- Prepare diffused SMPL from LoopReg, NeurIPS'20, with the script utils/spread_SMPL_function.py
+- Download assets: Coming soon.
 
 ## Download pre-trained models
 Coming soon.

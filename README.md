@@ -2,6 +2,7 @@
 Repo for BEHAVE: Dataset and Method for Tracking Human Object Interactions, CVPR'22
 
 ## Prerequisites
+I've added my environment installations in the provided requirements.txt file.
 
 ## Download pre-trained models
 Coming soon.

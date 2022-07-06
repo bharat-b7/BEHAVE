@@ -1,6 +1,7 @@
 # BEHAVE
 Repo for BEHAVE: Dataset and Method for Tracking Human Object Interactions, CVPR'22
-Link to paper: 
+
+Link to paper: https://arxiv.org/pdf/2204.06950.pdf
 
 ## Prerequisites
 - Cuda 10.2

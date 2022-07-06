@@ -1,8 +1,16 @@
 # BEHAVE
 Repo for BEHAVE: Dataset and Method for Tracking Human Object Interactions, CVPR'22
+Link to paper: 
 
 ## Prerequisites
-- I've added my environment installations in the provided requirements.txt file.
+- Cuda 10.2
+- Python 3.7
+- Pytorch 1.7.1
+- pytorch3d 0.2.0
+- MPI mesh library (https://github.com/MPI-IS/mesh) This is good to have. you can also replace it with trimesh.
+- Trimesh
+- SMPL pytorch from https://github.com/gulvarol/smplpytorch. I have included these files (with required modifications) in this repo.
+- Download SMPL from https://smpl.is.tue.mpg.de/
 - Use the script utils/voxelize_ho.py to voxelize the human and object point cloud from BEHAVE dataset. This is the input to the network.
 - Use the scipt utils/compute_df_ho.py to sample query points and compute distance and correspondence fields. This is the supervision to the network.
 - Prepare diffused SMPL from LoopReg, NeurIPS'20, with the script utils/spread_SMPL_function.py

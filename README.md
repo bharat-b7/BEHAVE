@@ -13,6 +13,9 @@ Link to paper: https://arxiv.org/pdf/2204.06950.pdf
 - Trimesh
 - SMPL pytorch from https://github.com/gulvarol/smplpytorch. I have included these files (with required modifications) in this repo.
 - Download SMPL from https://smpl.is.tue.mpg.de/
+
+## Prepare data
+- Download BEHAVE dataset from: https://github.com/xiexh20/behave-dataset
 - Use the script utils/voxelize_ho.py to voxelize the human and object point cloud from BEHAVE dataset. This is the input to the network.
 - Use the scipt utils/compute_df_ho.py to sample query points and compute distance and correspondence fields. This is the supervision to the network.
 - Prepare diffused SMPL from LoopReg, NeurIPS'20, with the script utils/spread_SMPL_function.py

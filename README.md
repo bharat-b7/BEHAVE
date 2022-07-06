@@ -15,14 +15,16 @@ Link to paper: https://arxiv.org/pdf/2204.06950.pdf
 - Use the script utils/voxelize_ho.py to voxelize the human and object point cloud from BEHAVE dataset. This is the input to the network.
 - Use the scipt utils/compute_df_ho.py to sample query points and compute distance and correspondence fields. This is the supervision to the network.
 - Prepare diffused SMPL from LoopReg, NeurIPS'20, with the script utils/spread_SMPL_function.py
+- Make data split for training and testing using the script utils/make_data_split.py
 - Download assets: Coming soon.
 
 ## Download pre-trained models
 Coming soon.
 
 ## Test BEHAVE model
-
+```python train.py -mode val -exp_id 01 -ext 01 -suffix 01 -save_name val -split_file assets/data_split_01.pkl -batch_size 12```
 ## Train BEHAVE model
+```python train.py -exp_id 01 -ext 01 -suffix 01 -split_file assets/data_split_01.pkl -batch_size 32 -epochs 150```
 
 ## Cite us:
 ```

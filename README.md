@@ -4,6 +4,7 @@ Repo for BEHAVE: Dataset and Method for Tracking Human Object Interactions, CVPR
 Link to paper: https://arxiv.org/pdf/2204.06950.pdf
 
 ## Prerequisites
+- I've added my environment files to requirements.txt. You can directly install these packages. Some of them are not necessary but good to have for debugging, visualizations etc. Core packages are listed below.
 - Cuda 10.2
 - Python 3.7
 - Pytorch 1.7.1

@@ -19,7 +19,7 @@ import pickle as pkl
 import trimesh
 from sklearn.decomposition import PCA
 from utils.preprocess_pointcloud import preprocess, bb_max, bb_min
-from utils.voxelize_ho import create_grid_points_from_bounds
+from utils.voxelize_ho import create_grid_points_from_bounds, clean_pc
 
 
 def parse_object(name):
@@ -48,8 +48,8 @@ def boundary_sampling(pc_human, pc_obj, smpl_path, obj_path, name, out_path, sig
 		print('Mesh not found, ', smpl_path)
 		return False
 
-	pc_h = trimesh.load(pc_human)
-	pc_o = trimesh.load(pc_obj)
+	pc_h = trimesh.load(pc_human, process=False)
+	pc_o = trimesh.load(pc_obj, process=False)
 	pc = trimesh.PointCloud(vertices=list(pc_h.vertices) + list(pc_o.vertices))
 	_, cent = preprocess(pc.vertices)
 	pc_h.vertices, _ = preprocess(pc_h.vertices, cent=cent)
@@ -57,9 +57,10 @@ def boundary_sampling(pc_human, pc_obj, smpl_path, obj_path, name, out_path, sig
 
 	smpl = trimesh.load(smpl_path, process=False)
 	obj = trimesh.load(obj_path, process=False)
-
 	smpl.vertices, _ = preprocess(smpl.vertices, cent=cent)
 	obj.vertices, _ = preprocess(obj.vertices, cent=cent)
+
+	# pc_o = trimesh.Trimesh(vertices=clean_pc(pc_o.vertices, obj.vertices))
 
 	# Get object PCA
 	pca = PCA(n_components=3)
@@ -82,14 +83,14 @@ def boundary_sampling(pc_human, pc_obj, smpl_path, obj_path, name, out_path, sig
 	grid_coords = grid_coords / sc
 
 	## Also add uniform points
-	n_samps = 20
-	uniform_points = np.array(create_grid_points_from_bounds(bounds[0], bounds[1], n_samps))
-	uniform_points_scaled = (2. * uniform_points.copy() - ce) / sc
-	uniform_points_scaled[:, 0], uniform_points_scaled[:, 2] = uniform_points_scaled[:, 2], \
-	                                                           uniform_points_scaled[:, 0].copy()
+	# n_samps = 20
+	# uniform_points = np.array(create_grid_points_from_bounds(bounds[0], bounds[1], n_samps))
+	# uniform_points_scaled = (2. * uniform_points.copy() - ce) / sc
+	# uniform_points_scaled[:, 0], uniform_points_scaled[:, 2] = uniform_points_scaled[:, 2], \
+	#                                                            uniform_points_scaled[:, 0].copy()
 
-	grid_coords = np.append(grid_coords, uniform_points_scaled, axis=0)
-	boundary_points = np.append(boundary_points, uniform_points, axis=0)
+	# grid_coords = np.append(grid_coords, uniform_points_scaled, axis=0)
+	# boundary_points = np.append(boundary_points, uniform_points, axis=0)
 
 	# Get distance from smpl
 	temp_h = trimesh.proximity.ProximityQuery(smpl)

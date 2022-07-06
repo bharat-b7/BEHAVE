@@ -28,6 +28,10 @@ from models.volumetric_SMPL import VolumetricSMPL
 from lib.smpl_paths import SmplPaths
 from lib.th_smpl_prior import get_prior
 from lib.smpl_layer import SMPL_Layer
+import yaml
+with open("PATHS.yml", 'r') as stream:
+    paths = yaml.safe_load(stream)
+PROCESSED_PATH, BEHAVE_PATH, OBJECT_PATH = paths['PROCESSED_PATH'], paths['BEHAVE_PATH'], paths['OBJECT_TEMPLATE']
 
 NUM_POINTS = 30000
 DEBUG = False
@@ -174,13 +178,11 @@ class Trainer(object):
 
 
 class Fitter(object):
-	def __init__(self, model, device, train_dataset, val_dataset, exp_name, optimizer='Adam', opt_dict={}, checkpoint_number=-1):
+	def __init__(self, model, device, train_dataset, val_dataset, exp_name, opt_dict={},
+	             checkpoint_number=-1):
 		self.model = model.to(device)
 		self.device = device
 		self.opt_dict = self.parse_opt_dict(opt_dict)
-
-		self.optimizer_type = optimizer
-		self.optimizer = self.init_optimizer(optimizer, self.model.parameters(), learning_rate=0.001)
 
 		self.train_dataset = train_dataset
 		self.val_dataset = val_dataset
@@ -208,9 +210,9 @@ class Fitter(object):
 		self.pose_prior = get_prior('male', precomputed=True)
 
 		self.object_mesh = {}
-		for i in glob('assets/objects/*'):
-			nam = split(i)[1][:-4]
-			self.object_mesh[nam] = trimesh.load_mesh(i, process=False)
+		for i in glob(join(OBJECT_PATH, '*')):
+			nam = split(i)[1]
+			self.object_mesh[nam] = trimesh.load_mesh(join(i, nam + '.obj') , process=False)
 
 		# normalise the objects to zero mean
 		self.objects, self.pca_axis = {}, {}
@@ -223,13 +225,12 @@ class Fitter(object):
 			                                dtype=torch.float32)
 
 			x = self.object_mesh[i].sample(3000)
-			self.objects[i] = torch.tensor(x, device=self.device, requires_grad=False,
-			                               dtype=torch.float32)
+			self.objects[i] = torch.tensor(x, device=self.device, requires_grad=False, dtype=torch.float32)
 
 	@staticmethod
 	def parse_opt_dict(opt_dict):
-		timestamp = int(time.time())
-		parsed_dict = {'iter_per_step': {1: 200, 2: 200, 3: 1}, 'cache_folder': join('cache', str(timestamp)),
+		# timestamp = int(time.time())
+		parsed_dict = {'iter_per_step': {1: 200, 2: 200, 3: 1},
 		               'epochs_phase_01': 0, 'epochs_phase_02': 0}
 		""" 
 		Phase_01: Initialised SMPL are far off from the solution. Optimize SMPL based on correspondences.
@@ -238,11 +239,8 @@ class Fitter(object):
 		"""
 		for k in parsed_dict:
 			if k in opt_dict:
-				if k == 'cache_folder':
-					parsed_dict[k] = join(opt_dict[k], str(timestamp))
-				else:
-					parsed_dict[k] = opt_dict[k]
-		print('Cache folder: ', parsed_dict['cache_folder'])
+				parsed_dict[k] = opt_dict[k]
+		# print('Cache folder: ', parsed_dict['cache_folder'])
 		return parsed_dict
 
 	@staticmethod
@@ -253,14 +251,17 @@ class Fitter(object):
 		Phase_03: Jointly update SMPL and correspondences.
 		"""
 		if phase == 1:
-			return {'corr': 2 * 10. ** 2, 'templ': 2 * 10. ** 2, 's2m': 10. ** 1, 'm2s': 10. ** 1, 'pose_pr': 10. ** -2,
-			        'shape_pr': 10. ** -1}
+			return {'corr': 10. ** 1, 'templ': 2 * 10. ** 2, 's2m': 10. ** 2, 'm2s': 10. ** 1, 'pose_pr': 10. ** -2,
+			        'shape_pr': 10. ** 0, 'object': 1., 'smpl_J': 10. ** 1, 'pca_axis': 10. ** 3, 's2m_o': 2 * 10. ** 1,
+			        'contacts': 10. ** 0}
 		elif phase == 2:
-			return {'corr': 10. ** 0, 'templ': 2 * 10. ** 2, 's2m': 2 * 10. ** 3, 'm2s': 10. ** 3, 'pose_pr': 10. ** -4,
-			        'shape_pr': 10. ** -1}
+			return {'corr': 10. ** -1, 'templ': 2 * 10. ** 2, 's2m': 2 * 10. ** 3, 'm2s': 10. ** 3,
+			        'pose_pr': 10. ** -4, 'shape_pr': 10. ** 0, 'object': 1., 'smpl_J': 10. ** 1, 'pca_axis': 10. ** 3,
+			        's2m_o': 10. ** 2, 'contacts': 10. ** 1}
 		else:
 			return {'corr': 2 * 10. ** 2, 'templ': 2 * 10. ** 2, 's2m': 10. ** 4, 'm2s': 10. ** 4, 'pose_pr': 10. ** -4,
-			        'shape_pr': 10. ** -1}
+			        'shape_pr': 10. ** 0, 'object': 1., 'smpl_J': 10. ** 0, 'pca_axis': 10. ** 3, 's2m_o': 10. ** 2,
+			        'contacts': 10. ** 1}
 
 	@staticmethod
 	def init_object_orientation(src_axis, tgt_axis):
@@ -275,6 +276,38 @@ class Fitter(object):
 		U, S, V = torch.svd(rot)
 		R = torch.bmm(U, V.transpose(2, 1))
 		return R
+
+	@staticmethod
+	def sum_dict(los):
+		temp = 0
+		for l in los:
+			temp += los[l]
+		return temp
+
+	def load_checkpoint(self, number=None):
+		checkpoints = glob(self.checkpoint_path + '/*')
+		if len(checkpoints) == 0:
+			print('No checkpoints found at {}'.format(self.checkpoint_path))
+			return 0
+
+		if number is None:
+			checkpoints = [os.path.splitext(os.path.basename(path))[0][17:] for path in checkpoints]
+			checkpoints = np.array(checkpoints, dtype=int)
+			checkpoints = np.sort(checkpoints)
+
+			if checkpoints[-1] == 0:
+				print('Not loading model as this is the first epoch')
+				return 0
+
+			path = join(self.checkpoint_path, 'checkpoint_epoch_{}.tar'.format(checkpoints[-1]))
+		else:
+			path = join(self.checkpoint_path, 'checkpoint_epoch_{}.tar'.format(number))
+
+		print('Loaded checkpoint from: {}'.format(path))
+		checkpoint = torch.load(path)
+		self.model.load_state_dict(checkpoint['model_state_dict'])
+		epoch = checkpoint['epoch']
+		return epoch
 
 	def get_object_class(self, paths):
 		lis = []
@@ -295,27 +328,29 @@ class Fitter(object):
 		sp = SmplPaths(gender='male')
 		smpl = sp.get_smpl()
 		for nam, p, b, t, c, ro, to, co, ce in zip(names, pose_, betas_, trans_, corr_, obj_R, obj_t, object_class,
-												   cent):
+		                                           cent):
 			name = split(nam)[1]
 			dataset = split(split(nam)[0])[1]
+			outfile = join(self.exp_path, save_name + '_ep_{}'.format(epoch), dataset)
+			if not exists(outfile):
+				os.makedirs(outfile)
+
 			smpl.pose[:] = p
 			smpl.betas[:10] = b
 			smpl.trans[:] = t + ce
 
 			# save registration
 			trimesh.Trimesh(vertices=smpl.r, faces=smpl.f).export(
-				join(self.exp_path, save_name + '_ep_{}'.format(epoch), dataset, name + '_{}_reg.ply'.format(it)))
+				join(outfile, name + '_{}_reg.ply'.format(it)))
 
 			trimesh.Trimesh(vertices=np.matmul(self.object_mesh[co].vertices, ro) + to + ce,
 			                faces=self.object_mesh[co].faces).export(
-				join(self.exp_path, save_name + '_ep_{}'.format(epoch), dataset, name + '_{}_obj.ply'.format(it)))
+				join(outfile, name + '_{}_obj.ply'.format(it)))
 
 			# save SMPL params
-			with open(join(self.exp_path, save_name + '_ep_{}'.format(epoch), dataset,
-						   name + '_{}_reg.pkl'.format(it)), 'wb') as f:
+			with open(join(outfile, name + '_{}_reg.pkl'.format(it)), 'wb') as f:
 				pkl.dump({'pose': p, 'betas': b, 'trans': t + ce}, f)
-			print('Saved,', join(self.exp_path, save_name + '_ep_{}'.format(epoch), dataset,
-								 name + '_{}_reg.pkl'.format(it)))
+			print('Saved,', join(outfile, name + '_{}_reg.pkl'.format(it)))
 
 	def fit_test_sample(self, save_name, num_saves=None):
 		device = self.device
@@ -348,6 +383,7 @@ class Fitter(object):
 			out = self.model(p, inputs)
 			corr_init = out['corr'].permute(0, 2, 1).detach()
 			_, part_label = torch.max(out['parts'].data, 1)
+			import ipdb; ipdb.set_trace()
 			corr = corr_init.clone().requires_grad_(True)
 			df_h = out['df_h'].detach()
 			df_o = out['df_o'].detach()
@@ -406,7 +442,7 @@ class Fitter(object):
 						l_str += ', {}: {:0.5f}'.format(l, loss_[l].item())
 					print(l_str)
 
-				if it % 300 == 299 or it==self.opt_dict['iter_per_step'][1] + self.opt_dict['iter_per_step'][2]-1:
+				if it % 300 == 299 or it == self.opt_dict['iter_per_step'][1] + self.opt_dict['iter_per_step'][2] - 1:
 					pose_ = pose.detach().cpu().numpy()
 					betas_ = betas.detach().cpu().numpy()
 					trans_ = trans.detach().cpu().numpy()
@@ -418,8 +454,8 @@ class Fitter(object):
 					obj_t_ = obj_t.detach().cpu().numpy()
 
 					self.save_output(names, pose_, betas_, trans_, corr_, R_, obj_t_, batch['cent'].numpy(),
-									 object_class, save_name, epoch,
-									 it)
+					                 object_class, save_name, epoch,
+					                 it)
 
 			count += len(names)
 
@@ -449,7 +485,7 @@ class Fitter(object):
 
 		poses, betas, trans = instance_params['pose'], instance_params['betas'], instance_params['trans']
 		corr, df_h = instance_params['corr'], instance_params['df_h']
-
+		# import ipdb; ipdb.set_trace()
 		## FIT OBJECT
 		object_init = instance_params['object_init']
 		rot = instance_params['obj_R']

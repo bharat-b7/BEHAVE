@@ -19,7 +19,7 @@ import yaml
 with open("PATHS.yml", 'r') as stream:
     paths = yaml.safe_load(stream)
 sys.path.append(paths['CODE'])
-PROCESSED_PATH, BEHAVE_PATH = paths['PROCESSED_PATH'], paths['BEHAVE_PATH']
+PROCESSED_PATH, BEHAVE_PATH, OBJECT_PATH = paths['PROCESSED_PATH'], paths['BEHAVE_PATH'], paths['OBJECT_TEMPLATE']
 
 from utils.preprocess_pointcloud import preprocess
 from utils.voxelize_ho import clean_pc
@@ -59,8 +59,8 @@ class DataLoader(object):
 
         # get objects
         self.objects = {}
-        for n, i in enumerate(glob('assets/objects/*')):
-            nam = split(i)[1][:-4]
+        for n, i in enumerate(glob(join(OBJECT_PATH, '*'))):
+            nam = split(i)[1]
             self.objects[nam] = n
 
     def __len__(self):
@@ -73,7 +73,7 @@ class DataLoader(object):
 
     def worker_init_fn(self, worker_id):
         ''' Worker init function to ensure true randomness.
-		'''
+        '''
         # base_seed = int(os.urandom(4).encode('hex'), 16)
         base_seed = int(codecs.encode(os.urandom(4), 'hex'), 16)
         np.random.seed(base_seed + worker_id)
@@ -82,6 +82,7 @@ class DataLoader(object):
         for n, k in enumerate(self.objects):
             if k in path:
                 return n
+        # import ipdb; ipdb.set_trace()
         raise ValueError
 
     def load_sampling_points(self, file):
@@ -215,27 +216,27 @@ class DataLoader(object):
                 }
 
 if __name__ == "__main__":
-	args = lambda: None
-	args.pc_samples = 5000
-	args.res = 128
-	args.sample_distribution = [0.5, 0.5]
-	args.sample_sigmas = [0.15, 0.015]
-	args.num_sample_points = 40000
-	args.batch_size = 48
-	args.suffix = '02'
-	args.ext = '01'
+    args = lambda: None
+    args.pc_samples = 5000
+    args.res = 128
+    args.sample_distribution = [0.5, 0.5]
+    args.sample_sigmas = [0.15, 0.015]
+    args.num_sample_points = 40000
+    args.batch_size = 4
+    args.suffix = '01'
+    args.ext = '01'
 
-	args.split_file = 'assets/data_split_kinect.pkl'
-	train_dataset = DataLoader('train', pointcloud_samples=args.pc_samples, res=args.res,
-	                              sample_distribution=args.sample_distribution,
-	                              sample_sigmas=args.sample_sigmas, num_sample_points=args.num_sample_points,
-	                              batch_size=args.batch_size, num_workers=48,
-	                              suffix=args.suffix, ext=args.ext,
-	                              split_file=args.split_file).get_loader(shuffle=False)
+    args.split_file = 'assets/data_split_01.pkl'
+    train_dataset = DataLoader('train', pointcloud_samples=args.pc_samples, res=args.res,
+                                  sample_distribution=args.sample_distribution,
+                                  sample_sigmas=args.sample_sigmas, num_sample_points=args.num_sample_points,
+                                  batch_size=args.batch_size, num_workers=0,
+                                  suffix=args.suffix, ext=args.ext,
+                                  split_file=args.split_file).get_loader(shuffle=False)
 
-	for n, b in enumerate(train_dataset):
-		pass
-		# break
+    for n, b in enumerate(train_dataset):
+        pass
+        break
 
-	# import ipdb; ipdb.set_trace()
-	print('Done')
+    # import ipdb; ipdb.set_trace()
+    print('Done')

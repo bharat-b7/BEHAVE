@@ -7,6 +7,9 @@ import numpy as np
 import pickle as pkl
 from psbody.mesh import Mesh
 from os.path import exists, split, join
+import sys
+sys.path.append('..')
+# import ipdb; ipdb.set_trace()
 from lib.smpl_paths import SmplPaths
 
 

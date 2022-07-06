@@ -47,8 +47,8 @@ def voxelized_pointcloud(pc_h_, pc_o_, name, out_path, res, num_points, bounds=(
         print('Already exists, ', out_file)
         return
 
-    pc_h = trimesh.load(pc_h_)
-    pc_o = trimesh.load(pc_o_)
+    pc_h = trimesh.load(pc_h_, process=False)
+    pc_o = trimesh.load(pc_o_, process=False)
     pc = trimesh.PointCloud(vertices=list(pc_h.vertices) + list(pc_o.vertices))
     point_cloud, cent = preprocess(pc.vertices)
     pc_h.vertices, _ = preprocess(pc_h.vertices, cent=cent)

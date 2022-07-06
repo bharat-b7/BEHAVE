@@ -6,7 +6,7 @@ Cite: BEHAVE: Dataset and Method for Tracking Human Object Interactions, CVPR'22
 
 from models.network import HOTNet
 from models.trainer import Trainer, Fitter
-from data_loaders.dataloader import DataLoader
+from data_loaders.data_loader import DataLoader
 import argparse
 import torch
 import numpy as np
@@ -41,8 +41,7 @@ def main(args):
 		                             suffix=args.suffix, ext=args.ext, split_file=args.split_file).get_loader(shuffle=False)
 
 		trainer = Fitter(net, torch.device("cuda"), None, test_dataset, exp_name,
-		                                    optimizer=args.optimizer, opt_dict={'cache_folder': args.cache_suffix,
-		                                                                        'iter_per_step': {1: 201, 2: 1, 3: 1}},
+		                                    opt_dict={'iter_per_step': {1: 201, 2: 1, 3: 1}},
 		                                    checkpoint_number=args.checkpoint)
 
 		trainer.fit_test_sample(save_name=args.save_name, num_saves=args.num_samples)
@@ -77,12 +76,14 @@ if __name__ == "__main__":
 	parser.add_argument('-exp_id', '--exp_id', default='', type=str)
 	# Select singleView mode
 	parser.add_argument('-split_file', '--split_file',
-	                    default='/BS/bharat-4/work/HOTracking/assets/data_split_kinect_gt_obj_10.2.pkl', type=str)
+	                    default='/BS/bharat-5/work/BEHAVE/assets/data_split_01.pkl', type=str)
 	# Epochs
 	parser.add_argument('-epochs', default=250, type=int)
 
 	# modes
 	parser.add_argument('-mode', default='train', choices=['train', 'val', 'eval'])
+	# Save output in a folder named <save_name>
+	parser.add_argument('-save_name', default='')
 	# number of test samples
 	parser.add_argument('-num_samples', default=-1, type=int)
 	# number of points queried for to produce the result

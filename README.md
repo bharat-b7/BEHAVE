@@ -9,7 +9,6 @@ Link to paper: https://arxiv.org/pdf/2204.06950.pdf
 - Python 3.7
 - Pytorch 1.7.1
 - pytorch3d 0.2.0
-- MPI mesh library (https://github.com/MPI-IS/mesh) This is good to have. you can also replace it with trimesh.
 - Trimesh
 - SMPL pytorch from https://github.com/gulvarol/smplpytorch. I have included these files (with required modifications) in this repo.
 - Download SMPL from https://smpl.is.tue.mpg.de/

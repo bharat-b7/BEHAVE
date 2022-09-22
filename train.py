@@ -37,7 +37,7 @@ def main(args):
 		test_dataset = DataLoader('val', pointcloud_samples=args.pc_samples, res=args.res,
 		                             sample_distribution=args.sample_distribution,
 		                             sample_sigmas=args.sample_sigmas, num_sample_points=args.num_sample_points,
-		                             batch_size=args.batch_size, num_workers=30,
+		                             batch_size=args.batch_size, num_workers=50,
 		                             suffix=args.suffix, ext=args.ext, split_file=args.split_file).get_loader(shuffle=False)
 
 		trainer = Fitter(net, torch.device("cuda"), None, test_dataset, exp_name,
@@ -85,7 +85,7 @@ if __name__ == "__main__":
 	# Save output in a folder named <save_name>
 	parser.add_argument('-save_name', default='')
 	# number of test samples
-	parser.add_argument('-num_samples', default=-1, type=int)
+	parser.add_argument('-num_samples', default=None, type=int)
 	# number of points queried for to produce the result
 	parser.add_argument('-retrieval_res', default=256, type=int)
 	# which checkpoint of the experiment should be used?

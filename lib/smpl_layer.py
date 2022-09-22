@@ -9,15 +9,11 @@ import numpy as np
 import torch
 from torch.nn import Module
 
-import sys
-# sys.path.append('/BS/bharat-4/work/hoi3d/LoopReg/smplpytorch')
-# import ipdb; ipdb.set_trace()
-
 from smplpytorch.smplpytorch.native.webuser.serialization import ready_arguments
 from smplpytorch.smplpytorch.pytorch import rodrigues_layer
 from smplpytorch.smplpytorch.pytorch.tensutils import (th_posemap_axisang, th_with_zeros, th_pack, make_list, subtract_flat_id)
 
-print('Using BLB SMPL from the project: HOTracking')
+print('Using BLB SMPL from the project: BEHAVE')
 
 
 class SMPL_Layer(Module):

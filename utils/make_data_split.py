@@ -17,7 +17,7 @@ sys.path.append('../')
 with open("PATHS.yml", 'r') as stream:
     paths = yaml.safe_load(stream)
 PROCESSED_PATH, BEHAVE_PATH = paths['PROCESSED_PATH'], paths['BEHAVE_PATH']
-EXT = '01'
+EXT = '02'
 SUFFIX = '01'
 
 

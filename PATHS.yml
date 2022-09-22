@@ -4,5 +4,5 @@
 
 CODE: /BS/bharat-5/work/BEHAVE # path to your main folder
 BEHAVE_PATH: /BS/xxie-5/static00/behave_release/sequences # path where BEHAVE sequences are stored
-OBJECT_TEMPLATE: /BS/xxie-5/static00/behave_release/objects
+OBJECT_TEMPLATE: /BS/xxie-5/static00/behave_release/objects # path where object templates are stored
 PROCESSED_PATH: /BS/bharat-5/static00/BEHAVE # path where processed BEHAVE is stored for training BEHAVE network

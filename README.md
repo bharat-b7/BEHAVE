@@ -19,7 +19,7 @@ Link to paper: https://arxiv.org/pdf/2204.06950.pdf
 - Use the scipt utils/compute_df_ho.py to sample query points and compute distance and correspondence fields. This is the supervision to the network.
 - Prepare diffused SMPL from LoopReg, NeurIPS'20, with the script utils/spread_SMPL_function.py
 - Make data split for training and testing using the script utils/make_data_split.py
-- Download assets: Coming soon.
+- Download assets: https://nextcloud.mpi-klsb.mpg.de/index.php/s/k4cK24c7SRWEBXo
 
 ## Download pre-trained models
 Coming soon.

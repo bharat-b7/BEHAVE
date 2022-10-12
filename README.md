@@ -30,6 +30,7 @@ Coming soon.
 ```python train.py -exp_id 01 -ext 01 -suffix 01 -split_file assets/data_split_01.pkl -batch_size 32 -epochs 150```
 
 ## Cite us:
+If you use this code please cite: </br>
 ```
 @inproceedings{bhatnagar22behave,
     title = {BEHAVE: Dataset and Method for Tracking Human Object Interactions},
